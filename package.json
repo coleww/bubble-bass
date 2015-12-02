@@ -12,8 +12,9 @@
     "web-audio-mock": "^0.1.9"
   },
   "dependencies": {
-    "make-distortion-curve": "^1.0.0"
-  }
+    "make-distortion-curve": "^1.0.0",
+    "midiutils": "0.0.4"
+  },
   "author": "Cole Willsea <coleww@gmail.com> (http://colewillsea.com/)",
   "license": "MIT",
   "keywords": [

@@ -1,3 +1,31 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+window.AudioContext = window.AudioContext || window.webkitAudioContext
+var ac = new AudioContext()
+var synth = require('./')(ac)
+// just connect and start the synth to make sure it plays, edit as needed!
+synth.connect(ac.destination)
+
+
+
+
+window.setInterval(function () {
+  synth.update({midiNote: 60 + ~~(Math.random() * 12), attack: 0.25, decay: 0.1, sustain: 0.7, release: 0.2}, ac.currentTime)
+  synth.start(ac.currentTime)
+
+  synth.update({midiNote: 60 + ~~(Math.random() * 12), attack: 0.25, decay: 0.1, sustain: 0.7, release: 0.2}, ac.currentTime + 1)
+  synth.start(ac.currentTime + 1)
+
+  synth.update({midiNote: 60 + ~~(Math.random() * 12), attack: 0.25, decay: 0.1, sustain: 0.7, release: 0.2}, ac.currentTime + 2)
+  synth.start(ac.currentTime + 2)
+
+  synth.update({midiNote: 60 + ~~(Math.random() * 12), attack: 0.25, decay: 0.1, sustain: 0.7, release: 0.2}, ac.currentTime + 2.5)
+  synth.start(ac.currentTime + 2.5)
+
+  synth.update({midiNote: 60 + ~~(Math.random() * 12), attack: 0.25, decay: 0.1, sustain: 0.7, release: 0.2}, ac.currentTime + 3)
+  synth.start(ac.currentTime + 3)
+}, 4200)
+
+},{"./":2}],2:[function(require,module,exports){
 var makeDistortionCurve = require('make-distortion-curve')
 var MIDIUtils = require('midiutils')
 
@@ -166,3 +194,85 @@ module.exports = function (ac, opts) {
     }
   }
 }
+},{"make-distortion-curve":3,"midiutils":4}],3:[function(require,module,exports){
+module.exports = function(amount) {
+  var k = typeof amount === 'number' ? amount : 50,
+    n_samples = 44100,
+    curve = new Float32Array(n_samples),
+    deg = Math.PI / 180,
+    i = 0,
+    x;
+  for ( ; i < n_samples; ++i ) {
+    x = i * 2 / n_samples - 1;
+    curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+  }
+  return curve;
+}
+
+},{}],4:[function(require,module,exports){
+(function() {
+
+	var noteMap = {};
+	var noteNumberMap = [];
+	var notes = [ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" ];
+
+
+	for(var i = 0; i < 127; i++) {
+
+		var index = i,
+			key = notes[index % 12],
+			octave = ((index / 12) | 0) - 1; // MIDI scale starts at octave = -1
+
+		if(key.length === 1) {
+			key = key + '-';
+		}
+
+		key += octave;
+
+		noteMap[key] = i;
+		noteNumberMap[i] = key;
+
+	}
+
+
+	function getBaseLog(value, base) {
+		return Math.log(value) / Math.log(base);
+	}
+
+
+	var MIDIUtils = {
+
+		noteNameToNoteNumber: function(name) {
+			return noteMap[name];
+		},
+
+		noteNumberToFrequency: function(note) {
+			return 440.0 * Math.pow(2, (note - 69.0) / 12.0);
+		},
+
+		noteNumberToName: function(note) {
+			return noteNumberMap[note];
+		},
+
+		frequencyToNoteNumber: function(f) {
+			return Math.round(12.0 * getBaseLog(f / 440.0, 2) + 69);
+		}
+
+	};
+
+
+	// Make it compatible for require.js/AMD loader(s)
+	if(typeof define === 'function' && define.amd) {
+		define(function() { return MIDIUtils; });
+	} else if(typeof module !== 'undefined' && module.exports) {
+		// And for npm/node.js
+		module.exports = MIDIUtils;
+	} else {
+		this.MIDIUtils = MIDIUtils;
+	}
+
+
+}).call(this);
+
+
+},{}]},{},[1]);
