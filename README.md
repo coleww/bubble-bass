@@ -1,18 +1,35 @@
-# web-audio-synth-template
+# BUBBLE-BASS
 
-a template for building web audio synths in a browserify/npm fashion [based on this blog post](http://colewillsea.com/blog/publishing-synthesizers-to-npm.html)
+A simple lo-fi kinda nintendo-ish bass synth, for use in browserified web audio applications.
 
-index.js contains a lot of boilerplate commented out code that you can use to yr leisure. 
-test.js contains a small test suite that tries to ensure that yr synth or FX is inter-operable with other web audio libraries.
+## WIKI
 
-If you don't like the choices I made in index.js, you can still just copy test.js into yr project and `npm install --save-dev tape`
+`npm install bubble-bass`
 
+## USE
+```
+window.AudioContext = window.AudioContext || window.webkitAudioContext
+var ac = new AudioContext()
+var bass = require('bubble-bass')(ac)
+bass.connect(ac.destination)
+
+// set the frequency/ADSR/detune
+bass.update({midiNote: 72, attack: 0.3, decay: 0.1, sustain: 0.3, release: 0.5, detune: 7})
+// and trigger it!
+bass.start(ac.currentTime)
+
+
+// destroy the oscillators completely. u probably would only wanna do this for garbage collection porpoises.
+bass.stop(ac.currentTime)
+
+
+// this will return an object containing all the nodes in the bubble-bass audioGraph, for closer-to-the-metal manipulation than the update/start methods provide.
+bass.nodes() 
+```
 
 # DEVELOPMENT
 
 ```
-git clone https://github.com/wham-js/web-audio-synth-template.git
-cd web-audio-synth-template
 npm install
 npm run test # should pass! Yay!
 ```
