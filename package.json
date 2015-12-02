@@ -1,0 +1,24 @@
+{
+  "name": "bubble-bass",
+  "version": "1.0.0",
+  "description": "a template for building web audio synths in a browserify/npm fashion [based on this blog post](http://colewillsea.com/blog/publishing-synthesizers-to-npm.html)",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "build": "browserify demo.js -o bundle.js"
+  },
+  "devDependencies": {
+    "tape": "^4.2.2",
+    "web-audio-mock": "^0.1.9"
+  },
+  "dependencies": {
+    "make-distortion-curve": "^1.0.0"
+  }
+  "author": "Cole Willsea <coleww@gmail.com> (http://colewillsea.com/)",
+  "license": "MIT",
+  "keywords": [
+    "web audio",
+    "bass",
+    "synth"
+  ]
+}
