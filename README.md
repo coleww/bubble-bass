@@ -14,7 +14,7 @@ var bass = require('bubble-bass')(ac)
 bass.connect(ac.destination)
 
 // set the frequency/ADSR/detune
-bass.update({midiNote: 72, attack: 0.3, decay: 0.1, sustain: 0.3, release: 0.5, detune: 7})
+bass.update({midiNote: 72, attack: 0.3, decay: 0.1, sustain: 0.3, release: 0.5, peak: 0.5, mid: 0.3, end: 0.00001, detune: 7})
 // and trigger it!
 bass.start(ac.currentTime)
 

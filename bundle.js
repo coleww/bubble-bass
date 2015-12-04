@@ -28,7 +28,7 @@ window.setInterval(function () {
 },{"./":2}],2:[function(require,module,exports){
 var makeDistortionCurve = require('make-distortion-curve')
 var MIDIUtils = require('midiutils')
-
+var adsr = require('a-d-s-r')
 // yr function should accept an audioContext, and optional params/opts
 module.exports = function (ac, opts) {
   // make some audioNodes, connect them, store them on the object
@@ -140,6 +140,9 @@ module.exports = function (ac, opts) {
     decay: 0.05,
     sustain: 0.3,
     release: 0.1,
+    peak: 0.5,
+    mid: 0.3,
+    end: 0.0000000001,
     detune: 1,
     chord: false // TODO: build chords instead of playing huge notes as an option?
   }
@@ -155,9 +158,7 @@ module.exports = function (ac, opts) {
       audioNodes.oscsine.start(ac.currentTime)
     },
     start: function (when) {
-      audioNodes.maingain.gain.linearRampToValueAtTime(audioNodes.settings.sustain + 0.2, when + audioNodes.settings.attack)
-      audioNodes.maingain.gain.linearRampToValueAtTime(audioNodes.settings.sustain, when + audioNodes.settings.decay)
-      audioNodes.maingain.gain.linearRampToValueAtTime(0, when + audioNodes.settings.release)
+      adsr(audioNodes.maingain, when, audioNodes.settings)
     },
     stop: function (when) {
       audioNodes.osc1.stop(when)
@@ -194,7 +195,15 @@ module.exports = function (ac, opts) {
     }
   }
 }
-},{"make-distortion-curve":3,"midiutils":4}],3:[function(require,module,exports){
+},{"a-d-s-r":3,"make-distortion-curve":4,"midiutils":5}],3:[function(require,module,exports){
+module.exports = function (gainNode, when, adsr) {
+  gainNode.gain.exponentialRampToValueAtTime(adsr.peak, when + adsr.attack)
+  gainNode.gain.exponentialRampToValueAtTime(adsr.mid, when + adsr.attack + adsr.decay)
+  gainNode.gain.setValueAtTime(adsr.mid, when + adsr.sustain + adsr.attack + adsr.decay)
+  gainNode.gain.exponentialRampToValueAtTime(adsr.end, when + adsr.sustain + adsr.attack + adsr.decay + adsr.release)
+}
+
+},{}],4:[function(require,module,exports){
 module.exports = function(amount) {
   var k = typeof amount === 'number' ? amount : 50,
     n_samples = 44100,
@@ -209,7 +218,7 @@ module.exports = function(amount) {
   return curve;
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 (function() {
 
 	var noteMap = {};

@@ -1,6 +1,6 @@
 var makeDistortionCurve = require('make-distortion-curve')
 var MIDIUtils = require('midiutils')
-
+var adsr = require('a-d-s-r')
 // yr function should accept an audioContext, and optional params/opts
 module.exports = function (ac, opts) {
   // make some audioNodes, connect them, store them on the object
@@ -112,6 +112,9 @@ module.exports = function (ac, opts) {
     decay: 0.05,
     sustain: 0.3,
     release: 0.1,
+    peak: 0.5,
+    mid: 0.3,
+    end: 0.0000000001,
     detune: 1,
     chord: false // TODO: build chords instead of playing huge notes as an option?
   }
@@ -127,9 +130,7 @@ module.exports = function (ac, opts) {
       audioNodes.oscsine.start(ac.currentTime)
     },
     start: function (when) {
-      audioNodes.maingain.gain.linearRampToValueAtTime(audioNodes.settings.sustain + 0.2, when + audioNodes.settings.attack)
-      audioNodes.maingain.gain.linearRampToValueAtTime(audioNodes.settings.sustain, when + audioNodes.settings.decay)
-      audioNodes.maingain.gain.linearRampToValueAtTime(0, when + audioNodes.settings.release)
+      adsr(audioNodes.maingain, when, audioNodes.settings)
     },
     stop: function (when) {
       audioNodes.osc1.stop(when)
